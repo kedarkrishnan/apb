@@ -9,9 +9,6 @@ import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 
-import lombok.Data;
-import lombok.NoArgsConstructor;
-
 @Entity
 public class User {
 
