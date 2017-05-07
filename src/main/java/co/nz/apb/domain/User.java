@@ -7,7 +7,6 @@ import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
-import javax.persistence.OneToOne;
 
 @Entity
 public class User {
@@ -21,8 +20,9 @@ public class User {
 	@OneToMany(cascade=CascadeType.ALL, orphanRemoval=true)
 	@JoinColumn(name="userId")
 	private Set<MedicalDetail> medicalDetails;
-	@OneToOne(cascade=CascadeType.ALL,orphanRemoval=true)	
-	private EmergencyContact emergencyContact;
+	@OneToMany(cascade=CascadeType.ALL,orphanRemoval=true)
+	@JoinColumn(name="userId")
+	private Set<EmergencyContact> emergencyContact;
 	
 	public String getUserId() {
 		return userId;
@@ -60,10 +60,10 @@ public class User {
 	public void setMedicalDetails(Set<MedicalDetail> medicalDetails) {
 		this.medicalDetails = medicalDetails;
 	}
-	public EmergencyContact getEmergencyContact() {
+	public Set<EmergencyContact> getEmergencyContact() {
 		return emergencyContact;
 	}
-	public void setEmergencyContact(EmergencyContact emergencyContact) {
+	public void setEmergencyContact(Set<EmergencyContact> emergencyContact) {
 		this.emergencyContact = emergencyContact;
 	}
 	

@@ -8,6 +8,6 @@ applications:
   instances: 1
   host: apb-${random-word}
   buildpack: java_buildpack
-  path: ./target/BluemixSpringBootJPA-0.0.1-SNAPSHOT.jar
+  path: ./target/apb-0.0.1-SNAPSHOT.jar
   services:
     - apb-mysql
