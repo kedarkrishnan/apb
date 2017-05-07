@@ -1,0 +1,13 @@
+declared-services:
+  pas-mysql:
+    label: cleardb
+    plan: spark
+applications:
+- name: apb
+  memory: 512M
+  instances: 1
+  host: apb-${random-word}
+  buildpack: java_buildpack
+  path: ./target/BluemixSpringBootJPA-0.0.1-SNAPSHOT.jar
+  services:
+    - apb-mysql
