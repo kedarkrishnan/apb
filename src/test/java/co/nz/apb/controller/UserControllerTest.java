@@ -16,11 +16,9 @@ import org.springframework.test.web.servlet.MockMvc;
 import co.nz.apb.controllers.UserController;
 import co.nz.apb.domain.User;
 import co.nz.apb.services.UserService;
-import lombok.Data;
 
 @RunWith(SpringRunner.class)
 @WebMvcTest(UserController.class)
-@Data
 public class UserControllerTest {
 
 	@MockBean
