@@ -33,10 +33,10 @@ public class UserController {
 		return userService.createUpdateUser(user);
 	}
 	
-	@GetMapping("/{deviceId}")
-	public User getUserDetails(@PathVariable String deviceId){
-		log.info("Get user details having device Id = {}",deviceId);
-		return userService.getUserFromDeviceId(deviceId);		
+	@GetMapping("/{userId}")
+	public User getUserDetails(@PathVariable String userId){
+		log.info("Get user details having user Id = {}",userId);
+		return userService.getUserByUserId(userId);		
 	}
 	
 	

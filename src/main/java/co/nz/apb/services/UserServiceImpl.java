@@ -24,9 +24,9 @@ public class UserServiceImpl implements UserService{
 	}
 
 	@Override
-	public User getUserFromDeviceId(String deviceId) {
-		log.info("retriving user having device id = {}",deviceId);
-		return userRepository.findUserByDeviceId(deviceId);
+	public User getUserByUserId(String userId) {
+		log.info("retriving user having user id = {}",userId);
+		return userRepository.findOne(userId);
 	}
 
 }
