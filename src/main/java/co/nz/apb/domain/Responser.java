@@ -1,21 +1,19 @@
 package co.nz.apb.domain;
 
 import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 
 @Entity
 public class Responser {
 	@Id
-	@GeneratedValue
-	private long responserId;
+	private String responserId;
 	private String responserName;
 	private String vehicalNumber;
 	private String deviceId;
-	public long getResponserId() {
+	public String getResponserId() {
 		return responserId;
 	}
-	public void setResponserId(long responserId) {
+	public void setResponserId(String responserId) {
 		this.responserId = responserId;
 	}
 	public String getResponserName() {

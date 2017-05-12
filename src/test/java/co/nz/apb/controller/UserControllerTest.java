@@ -29,19 +29,19 @@ public class UserControllerTest {
 	
 	@Test
 	public void userDetailIsEmpty_When_deviceIdIsNotFound() throws Exception{
-		given(this.userService.getUserFromDeviceId("AAABBBCCC")).willReturn(null);
-		this.mvc.perform(get("/api/user/AAABBBCCC"))
+		given(this.userService.getUserByUserId("alanRu")).willReturn(null);
+		this.mvc.perform(get("/api/user/alanRu"))
 		.andExpect(status().isOk());
-		verify(this.userService).getUserFromDeviceId("AAABBBCCC");		
+		verify(this.userService).getUserByUserId("alanRu");		
 	}
 	
 	@Test
 	public void userDetailIsCorrect_When_deviceIdIsFound() throws Exception{
 		User user = new User();	
-		given(this.userService.getUserFromDeviceId("ARD1224DDSRRR")).willReturn(user);
-		this.mvc.perform(get("/api/user/ARD1224DDSRRR"))
+		given(this.userService.getUserByUserId("samPaul")).willReturn(user);
+		this.mvc.perform(get("/api/user/samPaul"))
 		.andExpect(status().isOk());
-		verify(this.userService).getUserFromDeviceId("ARD1224DDSRRR");		
+		verify(this.userService).getUserByUserId("samPaul");		
 	}
 	
 }
