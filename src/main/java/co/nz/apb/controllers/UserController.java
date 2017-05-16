@@ -18,7 +18,7 @@ import co.nz.apb.services.UserService;
 @RequestMapping("/api/user")
 public class UserController {
 
-	Logger log = LoggerFactory.getLogger(getClass());
+	private final Logger log = LoggerFactory.getLogger(getClass());
 	
 	private final UserService userService;
 	
