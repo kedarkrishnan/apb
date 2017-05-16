@@ -6,7 +6,7 @@ angular.module('apb').controller('MainController', ['$scope','$log','$window',
         $scope.alertList = [];
         $scope.winHeight = $window.innerHeight + "px";
 		function init(){
-			var ws = new WebSocket("wss://apb.mybluemix.net/GeoLocationHandler");
+			var ws = new WebSocket("wss://" + window.location.host + "/GeoLocationHandler");
             ws.onopen = function(){
               console.log("Web Socket is connected");
             };            
