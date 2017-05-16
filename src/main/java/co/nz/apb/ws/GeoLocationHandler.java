@@ -21,7 +21,6 @@ public class GeoLocationHandler extends TextWebSocketHandler {
 		try {
 			session.sendMessage(new TextMessage("Hi"));
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		

@@ -1,1 +1,28 @@
-<h1>APB</h1>
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>APB</title>
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+        <link rel="stylesheet" type="text/css" href="assets/css/APB.css">       
+    </head>
+    <body data-ng-controller="MainController">
+        <div class="container-fluid">
+            <div class="row">
+                <div class="text-center map col-md-10" id="map" ng-style="{height: winHeight}">                
+                </div>
+                <div class="col-md-2">
+                </div>            
+            </div>
+        </div>
+        <script src="https://code.angularjs.org/1.4.8/angular.min.js"></script>
+        <script src="https://code.angularjs.org/1.4.8/angular-route.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/angular-strap/2.3.12/angular-strap.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/angular-strap/2.3.12/angular-strap.tpl.min.js"></script>
+        <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyD4chQPK39N_LsSDNwuqjixnKYP9vRbH3c&language=en">
+        </script>
+
+        <script src="application.js"></script>
+        <script src="main.controller.js"></script>      
+    </body>
+</html>
