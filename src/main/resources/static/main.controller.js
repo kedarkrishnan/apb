@@ -63,10 +63,10 @@ angular.module('apb').controller('MainController', ['$scope','$log','$window',
 	];
 
 	var icons = {
-      user: {
+      User: {
         icon: 'assets/images/user.png'
       },
-      ambulance: {
+      Responser: {
         icon: 'assets/images/ambulance.png'
       }
     };

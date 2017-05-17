@@ -24,12 +24,17 @@ public class GeoLocationHandler extends TextWebSocketHandler {
     }
 	
 	public void updateLocation(String msg){
-		log.info("updateAlert - {} , {}",msg,sessions.size());
+		log.info("updateAlert - {} , Sessions {} , userSessions {}",msg,sessions.size(),userSessions.size());
 		try {			
+			log.info("sendMessage - {}",msg);
 			for(String key : sessions.keySet()) {
-				log.info("sendMessage - {}",msg);
-				WebSocketSession ws = sessions.get(key); 
-				ws.sendMessage(new TextMessage(msg));
+				WebSocketSession ws = sessions.get(key);
+				if(ws.isOpen()){
+					ws.sendMessage(new TextMessage(msg));
+				}else{
+					sessions.remove(key);
+					userSessions.remove(key);
+				}
 			}
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -59,7 +64,7 @@ public class GeoLocationHandler extends TextWebSocketHandler {
 	public void afterConnectionClosed(WebSocketSession session, CloseStatus status) throws Exception {
 		log.info("afterConnectionClosed");
 		sessions.remove(session);
-		userSessions.remove(session.getRemoteAddress());
+		userSessions.remove(session.getRemoteAddress().toString());
 	}
 	
 	
