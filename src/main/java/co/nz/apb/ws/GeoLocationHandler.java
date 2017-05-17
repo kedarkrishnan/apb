@@ -23,7 +23,7 @@ public class GeoLocationHandler extends TextWebSocketHandler {
 		userSessions.put(addr,message.getPayload());		
     }
 	
-	public void updateAlert(String msg){
+	public void updateLocation(String msg){
 		log.info("updateAlert - {} , {}",msg,sessions.size());
 		try {			
 			for(String key : sessions.keySet()) {
@@ -59,6 +59,7 @@ public class GeoLocationHandler extends TextWebSocketHandler {
 	public void afterConnectionClosed(WebSocketSession session, CloseStatus status) throws Exception {
 		log.info("afterConnectionClosed");
 		sessions.remove(session);
+		userSessions.remove(session.getRemoteAddress());
 	}
 	
 	

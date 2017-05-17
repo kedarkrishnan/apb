@@ -30,7 +30,7 @@ public class GeoLocationController {
 		log.info("tagLocation - userId={} lat={} lng={} role={}",userId,lat,lng,role);
 		StringBuilder message = new StringBuilder(100);
 		message.append(userId).append(",").append(lat).append(",").append(lng).append(",").append(role);
-		geoLocationHandler.updateAlert(message.toString());
+		geoLocationHandler.updateLocation(message.toString());
 	}
 	
 	@PostMapping("/tag/{responseId}")
