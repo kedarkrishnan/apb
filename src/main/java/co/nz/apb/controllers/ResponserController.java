@@ -4,6 +4,7 @@ package co.nz.apb.controllers;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -33,10 +34,10 @@ public class ResponserController {
 		return responserService.createUpdateResponser(responser);
 	}
 	
-	@GetMapping("/{responserId}")
-	public Responser getResponserDetails(@PathVariable String responserId){
-		log.info("Get responser details for responser Id = {}",responserId);
-		return responserService.getResponserByResponserId(responserId);
+	@GetMapping("/{deviceId}")	
+	public Responser getResponserDetails(@PathVariable String deviceId){
+		log.info("Get responser details for device Id = {}",deviceId);
+		return responserService.getResponserByDeviceId(deviceId);
 	}
 	
 	

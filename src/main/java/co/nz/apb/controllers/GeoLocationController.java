@@ -33,4 +33,13 @@ public class GeoLocationController {
 		geoLocationHandler.updateAlert(message.toString());
 	}
 	
+	@PostMapping("/tag/{responseId}")
+	public void tagResponser(@PathVariable String responseId,@RequestParam String userId,
+				@RequestParam String lat,@RequestParam String lng){
+		log.info("tagResponser - userId={} lat={} lng={} ",userId,lat);
+		StringBuilder message = new StringBuilder(100);
+		message.append(userId).append(",").append(lat).append(",").append(lng);
+		geoLocationHandler.updateResponser(message.toString(),responseId);
+	}
+	
 }

@@ -6,5 +6,5 @@ import co.nz.apb.domain.Responser;
 
 public interface ResponserRepository extends CrudRepository<Responser,String>{
 
-	
+		public Responser findByDeviceId(String deviceId); 
 }

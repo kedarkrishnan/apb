@@ -24,9 +24,9 @@ public class ResponserServiceImpl implements ResponserService{
 	}
 
 	@Override
-	public Responser getResponserByResponserId(String responserId) {
-		log.info("retriving responser having responser id = {}",responserId);
-		return responserRepository.findOne(responserId);
+	public Responser getResponserByDeviceId(String deviceId) {
+		log.info("retriving responser having responser id = {}",deviceId);
+		return responserRepository.findByDeviceId(deviceId);
 	}
 
 }
