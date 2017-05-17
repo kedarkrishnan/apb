@@ -26,10 +26,10 @@ public class GeoLocationController {
 	
 	@PostMapping("/{userId}")
 	public void tagLocation(@PathVariable String userId,
-				@RequestParam String lat,@RequestParam String lng){
-		log.info("tagLocation - userId={} lat={} lng={}",userId,lat,lng);
+				@RequestParam String lat,@RequestParam String lng,@RequestParam String role){
+		log.info("tagLocation - userId={} lat={} lng={} role={}",userId,lat,lng,role);
 		StringBuilder message = new StringBuilder(100);
-		message.append(userId).append(",").append(lat).append(",").append(lng).append(",").append("user");
+		message.append(userId).append(",").append(lat).append(",").append(lng).append(",").append(role);
 		geoLocationHandler.updateAlert(message.toString());
 	}
 	
