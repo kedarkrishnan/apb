@@ -1,12 +1,11 @@
 'use strict';
 
-var applicationName = "apb";
-var app = angular.module(applicationName,['ngRoute','mgcrea.ngStrap']);
+var app = angular.module('apb',['ngRoute','mgcrea.ngStrap']);
 
-app.config(['$logProvider','$routeProvider',
-	function($logProvider,$routeProvider) {
+app.config(['$httpProvider','$logProvider','$routeProvider',
+	function($httpProvider,$logProvider,$routeProvider) {
 		$logProvider.debugEnabled(true);
-				
+		
 		$routeProvider
 		.when('/', {
 		    controller: 'MainController',
@@ -16,10 +15,6 @@ app.config(['$logProvider','$routeProvider',
 		    redirectTo: '/'
 		});
 	}
-]);
-
-angular.element(document).ready(function(){
-	angular.bootstrap(document,[applicationName]);
-});
+])
 
 

@@ -17,7 +17,7 @@ public class GeoLocationController {
 
 	Logger log = LoggerFactory.getLogger(getClass());
 	private final GeoLocationHandler geoLocationHandler;
-	
+	 
 	@Autowired
 	public GeoLocationController(GeoLocationHandler geoLocationHandler){
 		this.geoLocationHandler = geoLocationHandler;
@@ -33,13 +33,13 @@ public class GeoLocationController {
 		geoLocationHandler.updateLocation(message.toString());
 	}
 	
-	@PostMapping("/tag/{responseId}")
-	public void tagResponser(@PathVariable String responseId,@RequestParam String userId,
+	@PostMapping("/tag/{responserId}")
+	public void tagResponser(@PathVariable String responserId,@RequestParam String userId,
 				@RequestParam String lat,@RequestParam String lng){
-		log.info("tagResponser - userId={} lat={} lng={} ",userId,lat);
+		log.info("tagResponser {} to userId={} lat={} lng={} ",responserId,userId,lat,lng);
 		StringBuilder message = new StringBuilder(100);
-		message.append(userId).append(",").append(lat).append(",").append(lng);
-		geoLocationHandler.updateResponser(message.toString(),responseId);
+		message.append(userId).append(",").append(lat).append(",").append(lng).append(",User");
+		geoLocationHandler.updateResponser(message.toString(),responserId);
 	}
 	
 }

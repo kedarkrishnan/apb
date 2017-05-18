@@ -6,12 +6,21 @@
         <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
         <link rel="stylesheet" type="text/css" href="assets/css/APB.css">       
     </head>
-    <body data-ng-controller="MainController">
+    <body ng-app="apb" data-ng-controller="MainController">
         <div class="container-fluid">
             <div class="row">
                 <div class="text-center map col-md-10" id="map" ng-style="{height: winHeight}">                
                 </div>
                 <div class="col-md-2">
+                <h3>Alert list</h3>
+                <div class="list-group" data-ng-repeat="marker in alertList" >
+                    
+                    <div class="list-group-item" ng-style="{'background-color':alertListBGC}">
+                        <a href="" data-ng-click="openInfoWindow(marker)" >
+                            <p class="blink" ng-style="{color: alertFontColor}" data-ng-bind="marker.info.userId"></p>
+                        </a>                       
+                    </div>
+                </div>
                 </div>            
             </div>
         </div>
@@ -23,6 +32,8 @@
         </script>
 
         <script src="application.js"></script>
-        <script src="main.controller.js"></script>      
+        <script src="main.controller.js"></script>         
+        
+        
     </body>
 </html>

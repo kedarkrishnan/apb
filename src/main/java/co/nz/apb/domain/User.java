@@ -17,9 +17,8 @@ public class User {
 	private String deviceId;
 	private String phone;
 	private String address;
-	@OneToMany(cascade=CascadeType.ALL, orphanRemoval=true)
-	@JoinColumn(name="userId")
-	private Set<MedicalDetail> medicalDetails;
+	
+	private String medicalDetails;
 	@OneToMany(cascade=CascadeType.ALL,orphanRemoval=true)
 	@JoinColumn(name="userId")
 	private Set<EmergencyContact> emergencyContact;
@@ -54,10 +53,10 @@ public class User {
 	public void setAddress(String address) {
 		this.address = address;
 	}
-	public Set<MedicalDetail> getMedicalDetails() {
+	public String getMedicalDetails() {
 		return medicalDetails;
 	}
-	public void setMedicalDetails(Set<MedicalDetail> medicalDetails) {
+	public void setMedicalDetails(String medicalDetails) {
 		this.medicalDetails = medicalDetails;
 	}
 	public Set<EmergencyContact> getEmergencyContact() {

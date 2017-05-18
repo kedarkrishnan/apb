@@ -19,33 +19,36 @@ public class GeoLocationHandler extends TextWebSocketHandler {
 	@Override
     public void handleTextMessage(WebSocketSession session, TextMessage message) {
 		String addr = session.getRemoteAddress().toString();
-		log.info("user for session  {} -  {} ",addr,message.getPayload());
-		userSessions.put(addr,message.getPayload());		
+		String userId = message.getPayload().toLowerCase();
+		log.info("Connected to {} as user -  {} ",addr,userId);
+		userSessions.put(addr,userId);
+		sessions.put(userId,session);	
+		log.info("Total sessions after connection of {}/{} - {}",addr,userId,sessions.size());
     }
 	
 	public void updateLocation(String msg){
-		log.info("updateAlert - {} , Sessions {} , userSessions {}",msg,sessions.size(),userSessions.size());
+		//log.info("updateLocation - {} , Sessions {} , userSessions {}",msg,sessions.size(),userSessions.size());
 		try {			
-			log.info("sendMessage - {}",msg);
-			for(String key : sessions.keySet()) {
-				WebSocketSession ws = sessions.get(key);
-				if(ws.isOpen()){
-					ws.sendMessage(new TextMessage(msg));
-				}else{
-					sessions.remove(key);
-					userSessions.remove(key);
-				}
+			log.info("Update Location - {}",msg);			
+			WebSocketSession ws = sessions.get("admin");
+			if(ws!=null  && ws.isOpen()){
+				ws.sendMessage(new TextMessage(msg));
 			}
+			
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
 	}
 	
-	public void updateResponser(String msg,String userId){
-		log.info("updateResponser - {} , {}",msg,sessions.size());
+	public void updateResponser(String msg,String responserId){
+		log.info("Update Responser {} - {} ",responserId,msg);
 		try {			
-				WebSocketSession ws = sessions.get(userSessions.get(userId)); 
-				ws.sendMessage(new TextMessage(msg));			
+				log.info("sessions {} ",sessions);
+				WebSocketSession ws = sessions.get(responserId.toLowerCase()); 
+				if(ws!=null && ws.isOpen()){
+					log.info("Updating responser");			
+					ws.sendMessage(new TextMessage(msg));
+				}
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -54,17 +57,18 @@ public class GeoLocationHandler extends TextWebSocketHandler {
 	@Override
 	public void afterConnectionEstablished(WebSocketSession session) throws Exception {
 		String addr = session.getRemoteAddress().toString();
-		log.info("ConnectionEstablished with {} ",addr);		
-		sessions.put(addr,session);
+		log.info("Connection Established with {} ",addr);		
 		userSessions.put(addr,"");
-		log.info("sessions {}",sessions.size());
 	}
 
 	@Override
 	public void afterConnectionClosed(WebSocketSession session, CloseStatus status) throws Exception {
-		log.info("afterConnectionClosed");
-		sessions.remove(session);
-		userSessions.remove(session.getRemoteAddress().toString());
+		String addr = session.getRemoteAddress().toString();		
+		String userId = userSessions.get(addr);		
+		log.info("Connection closed for session {}/{}",addr,userId);
+		sessions.remove(userId);
+		userSessions.remove(addr);
+		log.info("Total sessions after closer of {}/{} - {}",addr,userId,sessions.size());
 	}
 	
 	
