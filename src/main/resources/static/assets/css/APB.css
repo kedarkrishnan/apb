@@ -8,7 +8,51 @@ body {
   top: 0px;
   overflow-x: scroll; 
 }
+.clickable{
+  cursor: pointer;
+}
+.markerDetails{
+  text-align: left;
+}
+.emergencyContact,.medicalDetails{
+  padding: 0;
+  margin-top: 5px;
+}
+.emergencyContact li{
+  list-style: none;
+  margin-bottom: 5px;
+}
+.icon-responser{
+  width: 48px;
+  height: 48px;
+  margin-right: 15px;
+}
+.icon-user{
+  width: 24px;
+  height: 24px;
+  margin-right: 15px;
+}
+.btn-assign,.btn-assign:hover,.btn-assign:focus{
+  width: 100%;
+  color: #fff;
+  background: navy;
+}
 
+hr{
+  margin: 10px 0;
+}
+.alertList{
+  position: absolute;
+  right: 0;
+  width: 20%;
+  height: 90%;
+  opacity: 0.9;
+  padding: 15px;
+  background: transparent;
+}
+.list-group-item{
+  border: 0;
+}
 .map {
   height: 500px;    
 }

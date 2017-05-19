@@ -16,8 +16,7 @@ public class User {
 	private String userName;
 	private String deviceId;
 	private String phone;
-	private String address;
-	
+	private String address;	
 	private String medicalDetails;
 	@OneToMany(cascade=CascadeType.ALL,orphanRemoval=true)
 	@JoinColumn(name="userId")

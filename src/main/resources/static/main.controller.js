@@ -1,8 +1,12 @@
 'use strict';
 angular.module('apb').controller('MainController', ['$scope','$log','$window','$http', '$location',
 	function($scope,$log,$window,$http,$location){
-		$log.debug('mainController');
+		var apiUrl ="https://apb.mybluemix.net/api";
+		var wsUrl ="wss://apb.mybluemix.net";
+		apiUrl ="http://localhost:8080/api";
+		wsUrl ="ws://localhost:8080";
 		
+		$log.debug('mainController');		
 		$scope.winHeight = $window.innerHeight + "px";
 		$scope.alertListBGC = '#ff3300';
 		$scope.alertFontColor = '#ffffff';
@@ -14,10 +18,8 @@ angular.module('apb').controller('MainController', ['$scope','$log','$window','$
 
 	    var icons = {
           User: {
-
             icon : {
-				    url: 'assets/images/User.jpeg', // url
-				   
+				    url: 'assets/images/User.png', // url				   
 				    origin: new google.maps.Point(0,0), // origin
 				    anchor: new google.maps.Point(0, 0) // anchor
 				}
@@ -25,12 +27,10 @@ angular.module('apb').controller('MainController', ['$scope','$log','$window','$
           },
 
           Responser: {
-
           	icon : {
-				    url: 'assets/images/Responser.png', // url
-				    
+				    url: 'assets/images/Responser.png', // url				    
 				    origin: new google.maps.Point(0,0), // origin
-				    anchor: new google.maps.Point(0, 0) // anchor
+				    anchor: new google.maps.Point(0,0) // anchor
 				}                     
           }
         };
@@ -39,20 +39,20 @@ angular.module('apb').controller('MainController', ['$scope','$log','$window','$
 		function init(){
 			var userId = $location.search().userId ? $location.search().userId : "Admin";
 			var mapOptions = {
-		        zoom: 14,
-		        center: new google.maps.LatLng(-36.8385546, 174.5709301),
+		        zoom: 17,
+		        center: new google.maps.LatLng(-36.880774,174.7055693),
 		        mapTypeId: google.maps.MapTypeId.ROADMAP
 	    	}
 
 			$scope.map = new google.maps.Map(document.getElementById('map'), mapOptions);	    	  
-			var ws = new WebSocket("wss://apb.mybluemix.net/GeoLocationHandler");
+			var ws = new WebSocket(wsUrl + "/GeoLocationHandler");
             ws.onopen = function(){
-	            console.log("Web Socket is connected");
+	            $log.info("Web Socket is connected to " + wsUrl);
 	            ws.send(userId)
             };            
 
             ws.onmessage = function(message){
-                console.log("Message received from WebSocket");
+                $log.info("Message received from WebSocket");
                 var data = message.data.split(",");
                 var mark = {
 			        userId : data[0],
@@ -64,8 +64,7 @@ angular.module('apb').controller('MainController', ['$scope','$log','$window','$
 			   
 			    $scope.$apply(function(){
 			    	 createMarker(mark);			    	 
-			    })                
-                console.log("markers",$scope.markers);			   
+			    })                		   
             }          
                
 		}	    
@@ -89,86 +88,97 @@ angular.module('apb').controller('MainController', ['$scope','$log','$window','$
 	        $scope.markers.push(marker);
 	        if(info.role === 'User'){
 	        	$scope.alertList.push(marker);
-	        	console.log('$scope.alertList',$scope.alertList);
+	        	console.log('alerts List',$scope.alertList);
 	        }
 
 	        
 
 	        google.maps.event.addListener(marker, 'click', function(){
-
 	        	if(marker.info.role === 'Responser'){
-	        		if(marker.info.status == 1){
-	        			marker.content = '<div></br><button class="btn btn-danger" id="assignBtn" >Assign To</button></div>';
-	        			displayContent(infoWindow,marker);
-
-	        			var assignResponserTo = document.getElementById('assignBtn');        				
-        				assignResponserTo.addEventListener('click',function(){
-				        	assignTo = [];
-				    		assignTo.push(marker.info.userId);
-				    		console.log('assignTo',assignTo);
-				        })
-
-	        		}
-
-	        		if(marker.info.status == 2){
-	        			marker.content = '<div></br><h3>Assigned To: ' + marker.info.assignTo + '</h3></div>';
-	        			displayContent(infoWindow,marker);
-
-	        		}
-	        		
+	        		if(!marker.userDetails){
+        				getUserDetails(marker.info.userId,marker.info.role).then(function(response){
+	        				marker.userDetails = response;	        				
+	        				marker.content = responserDetails(marker);	
+	        				checkAssignment(infoWindow,marker);
+        				})        				        				        		
+        			}else{
+        				marker.content = responserDetails(marker);
+        				checkAssignment(infoWindow,marker);
+        			} 	        			        		
 	        	}
 	        	
 	        	if(marker.info.role === 'User'){
 	        		//first time load user
 	        		if(!marker.userDetails){
-	        			getUserDetails(marker.info.userId).then(function(response){
+        				getUserDetails(marker.info.userId,marker.info.role).then(function(response){
 	        				marker.userDetails = response;
 	        				marker.content = layoutMedicalDetails(marker);
-	        				displayContent(infoWindow,marker);
-	        				})
-	        			} 
-	        				
-    				// The "assign to" button has been clicked:
-    				if(assignTo.length > 0){
-    					if(marker.info.responderId){
-    						alert("This user is already assigned!");
-    					}else{
-    						assignTo.push(marker.info.userId);
-    						console.log('assignToEnd',assignTo);
-    						getUserDetails(marker.info.userId).then(function(){
-    							//add responserId to the user
-    							marker.info.responserId = assignTo[0];
-    							// add assignTo to the responser
-    							var responser = $scope.markers.find(function(marker){
-    								return marker.info.userId == assignTo[0];
-    							})
-    							responser.info.assignTo = assignTo[1];
-    							responser.info.status = 2;
-
-    							assignTo = [];
-    							$scope.alertListBGC = '#f2f2f2';
-    							$scope.alertFontColor = '#003cb3';
-    							console.log('markers',$scope.markers);
-    							
-    						})
-    					}
-    				} 
-    				// The "assign to" button hasn't been clicked:	
-    				if(assignTo.length == 0){
-    					console.log('NoAssignTo');
-    					//the user is already assigned
-    					if(marker.info.responserId){
-    						if(!marker.content.includes('Assigned'))
-		        				marker.content += '<div></br><h4>Assigned To: <strong>' + marker.info.responserId + '</strong></h4></div>';
-		        			} 
-    				}
-	        			displayContent(infoWindow,marker);	        		
+	        				checkResponserAssignment(marker,infoWindow);	        				
+        				})
+        			} else{
+        				marker.content = layoutMedicalDetails(marker);
+	        			checkResponserAssignment(marker,infoWindow);	        				
+        			}     		
 	        	}	            
 	        });
 	        
 	        
 	        
 	    } 
+
+	    function checkResponserAssignment(marker,infoWindow){
+	    	// The "assign to" button has been clicked:
+			if(assignTo.length > 0){
+				if(marker.info.responder){
+					alert("Already assigned!");
+				}else{
+					assignTo.push(marker);
+					console.log('assignToEnd',assignTo);
+					marker.info.responder = assignTo[0];
+					// add assignTo to the responser
+					// var responser = $scope.markers.find(function(marker){
+					// 	return marker.info.userId == assignTo[0].info.userId;
+					// })
+					assignTo[0].info.assignTo = assignTo[1];
+					
+					sendAssignToServer(assignTo[0],assignTo[1]);
+					assignTo = [];
+					$scope.$apply(function(){
+						marker.info.status = 0;
+						$scope.alertListBGC = '#ffebaf';
+						$scope.alertFontColor = '#000000';	
+					})
+					
+					console.log('markers',$scope.markers);
+					
+				}				
+			} 
+			// The "assign to" button hasn't been clicked:	
+			if(assignTo.length === 0 && marker.info.responder){
+				console.log('NoAssignTo');
+				marker.content += '<div><hr><h4><img class="icon-responser" src="assets/images/Responser.png"></img>' + marker.info.responder.info.userId + '</h4></div>';
+			}
+			displayContent(infoWindow,marker);
+	    }
+
+	    function checkAssignment(infoWindow,marker){
+	    	if(!marker.info.assignTo){
+    			marker.content += '<div></br><button class="btn btn-assign" id="assignBtn" >Assign To</button></div>';
+    			displayContent(infoWindow,marker);
+    			var assignResponserTo = document.getElementById('assignBtn');        				
+				assignResponserTo.addEventListener('click',function(){
+		        	assignTo = [];
+		    		assignTo.push(marker);
+		    		console.log('assignTo',assignTo);
+		        })
+
+    		}
+
+    		if(marker.info.assignTo){
+    			marker.content += '<div><hr><h4><img class="icon-user" src="assets/images/User.png"></img>' + marker.info.assignTo.info.userId + '</h4></div>';
+    			displayContent(infoWindow,marker);
+    		}
+	    }
 
 	    var checkWhetherUserExist = function(userId){
 	    	var result = $scope.markers.find(function(marker){
@@ -184,44 +194,71 @@ angular.module('apb').controller('MainController', ['$scope','$log','$window','$
 			$scope.markers.splice(index,1);
 	    } 	    
 
-	   var  getUserDetails = function(userId){
-	    	console.log("getUserDetails");
-	    	return $http.get('https://apb.mybluemix.net/api/user/' + userId)
+	   var  getUserDetails = function(id,type){
+	    	$log.info("get Details for ",type,id);
+	    	var by = type==='Responser'?"/id":"";
+	    	return $http.get(apiUrl + '/' + type.toLowerCase() + by + '/' + id)
 	    			.then(function(response){
+	    				$log.info("Details ",response);
 	    				return response.data;
 	    			})
 	    }
 
 	    var layoutMedicalDetails = function(marker){
-	    	var content = '<table class="table table-bordered"><tbody>';
-	    	marker.userDetails.medicalDetails.forEach(function(detail){
-	    		content += '<tr><td>' + detail.detailType + '</td><td>' + detail.detailValue +'</td></tr>';
-	    	})
-	    	content += '</tbody></table>';
+	    	var content = "<div>"
+	    	content += "<b>Medical Details</b>";
+	    	content += "<p class='medicalDetails'>" + marker.userDetails.medicalDetails + "</p>";
+	    	content += "<hr>";
+	    	content += "<b>Emergency Contact Details</b>";	    	
+	    	content += "<ul class='emergencyContact'>";
+	    	var emergencyContact = marker.userDetails.emergencyContact[0];
+			content += "<li>Contact Name: " + emergencyContact.contactName + "</li>";
+			content += "<li>Phone: " + emergencyContact.phone + "</li>";
+			content += "<li>Relation: " + emergencyContact.relation + "</li>";
+	    	content += "</ul>";
+	    	content += '<div>';
 	    	return content;
 	    }
 
-	    var displayContent = function(infoWindow,marker){
+	    var responserDetails = function(marker){
+	    	var content = "<div>"
+	    	content += "Vehical Number: <b>" + marker.userDetails.vehicalNumber + "</b>";
+	    	content += '<div>';
+	    	return content;
+	    }
 
-	    	infoWindow.setContent('<h2>' + marker.title + '</h2>' + marker.content);
+	    var displayContent = function(infoWindow,marker){	    	
+	    	var markerDetails = '<div class="markerDetails">'
+	    	markerDetails += '<h3 id="userId">'; 
+	    	if(marker.userDetails){
+	    		if(marker.info.role==='User'){
+	    			markerDetails += marker.userDetails.userName; 	    		
+	    		}else{
+	    			markerDetails += marker.userDetails.responserName; 	    		
+	    		}
+	    	}	    		
+	    	markerDetails += "<small> (" + marker.title + ")</small></h3>";
+	    	markerDetails += marker.content + '</div>';
+
+	    	infoWindow.setContent(markerDetails);
 	        infoWindow.open($scope.map, marker);
 	    }
 	    
-	    var sendAssignToServer = function(assignTo,info){
-	    	console.log('sendAssignToServer');
-	    	return $http.post('http://apb.mybluemix.net/api/geolocation/tag/' + assignTo[0] + '?userId=' + assignTo[1] + '&lat=' + info.lat + '&lng=' + info.long)
+	    var sendAssignToServer = function(responser,user){
+	    	$log.debug('sendAssignToServer');
+	    	return $http.post( apiUrl + '/geolocation/tag/' + responser.info.userId + '?userId=' + user.info.userId + '&lat=' + user.info.lat + '&lng=' + user.info.long)
 
 	    }
 
 	    $scope.openInfoWindow = function(selectedMarker){
 	    	console.log('openInfoWindow',selectedMarker);
 	        google.maps.event.trigger(selectedMarker, 'click');
-	    }
+	    }	    
 
 	    init();
 
 	    var testUrl = function(){
-	    	return $http.post('https://apb.mybluemix.net/api/responser');
+	    	return $http.post(apiUrl + '/responser');
 	    }
 
 
