@@ -3,8 +3,8 @@ angular.module('apb').controller('MainController', ['$scope','$log','$window','$
 	function($scope,$log,$window,$http,$location){
 		var apiUrl ="https://apb.mybluemix.net/api";
 		var wsUrl ="wss://apb.mybluemix.net";
-		apiUrl ="http://localhost:8080/api";
-		wsUrl ="ws://localhost:8080";
+		//apiUrl ="http://localhost:8080/api";
+		//wsUrl ="ws://localhost:8080";
 		
 		$log.debug('mainController');		
 		$scope.winHeight = $window.innerHeight + "px";
