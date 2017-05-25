@@ -11,6 +11,9 @@ app.config(['$httpProvider','$logProvider','$routeProvider',
 		    controller: 'MainController',
 		    templateUrl: 'index.html'
 		})
+		.when('/download',{
+			templateUrl:'download.html'
+		})
 		.otherwise({
 		    redirectTo: '/'
 		});
