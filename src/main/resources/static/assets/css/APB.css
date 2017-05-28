@@ -8,6 +8,11 @@ body {
   top: 0px;
   overflow-x: scroll; 
 }
+.download{
+  display: block;
+  text-align: center;
+  width: 100%;
+}
 .clickable{
   cursor: pointer;
 }
@@ -45,11 +50,33 @@ hr{
   position: absolute;
   right: 0;
   width: 20%;
-  height: 90%;
+  height: 50%;
   opacity: 0.9;
   padding: 15px;
   background: transparent;
 }
+.alertList img.list-icon{
+  width: 24px;
+  height: 24px;
+  margin-right: 0px;
+}
+
+.responserList{
+  margin-top: 20px;
+  opacity: 0.9;
+  background: transparent;
+  color: #0066ff;
+}
+.responserList .list-group-item{
+  background-color: #0066ff;
+  color: white;
+}
+.listHeader{
+  background-color: #0066ff;
+  color: white;
+  text-align: center;
+}
+
 .list-group-item{
   border: 0;
 }

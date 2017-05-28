@@ -12,9 +12,12 @@ angular.module('apb').controller('MainController', ['$scope','$log','$window','$
 		$scope.alertFontColor = '#ffffff';
         $scope.markers = [];
         $scope.alertList = [];
+        $scope.responserList = [];
         
         var infoWindow = new google.maps.InfoWindow();
 	    var assignTo = [];
+	    var originLocation ={} ;
+	    var destLocation = {} ; 
 
 	    var icons = {
           User: {
@@ -34,23 +37,45 @@ angular.module('apb').controller('MainController', ['$scope','$log','$window','$
 				}                     
           }
         };
-		
-		
-		function init(){
-			var userId = $location.search().userId ? $location.search().userId : "Admin";
-			var mapOptions = {
+			
+		var mapOptions = {
 		        zoom: 17,
 		        center: new google.maps.LatLng(-36.880774,174.7055693),
-		        mapTypeId: google.maps.MapTypeId.ROADMAP
+		        mapTypeId: google.maps.MapTypeId.ROADMAP,
+		        zoomControl: true,
+	            zoomControlOptions: {
+	                position: google.maps.ControlPosition.LEFT_CENTER
+	            },
 	    	}
-
-			$scope.map = new google.maps.Map(document.getElementById('map'), mapOptions);	    	  
+			$scope.map = new google.maps.Map(document.getElementById('map'), mapOptions);
+			var directionsService = new google.maps.DirectionsService;
+        	var directionsDisplay = new google.maps.DirectionsRenderer({
+			      map: $scope.map
+			    });
+        	//display the route:
+	        function calculateAndDisplayRoute(directionsService, directionsDisplay) {
+		    	console.log('calculateAndDisplayRoute');
+		    	directionsService.route({	        	
+		          origin: originLocation,
+		          destination: destLocation,
+		          travelMode: google.maps.TravelMode.DRIVING
+		        }, function(response, status) {
+		          if (status === 'OK') {
+		            directionsDisplay.setDirections(response);
+		          } else {
+		            window.alert('Directions request failed due to ' + status);
+		          }
+		        });
+		     }
+	
+		
+		function init(){
+			var userId = $location.search().userId ? $location.search().userId : "Admin";						
 			var ws = new WebSocket(wsUrl + "/GeoLocationHandler");
             ws.onopen = function(){
 	            $log.info("Web Socket is connected to " + wsUrl);
 	            ws.send(userId)
             };            
-
             ws.onmessage = function(message){
                 $log.info("Message received from WebSocket");
                 var data = message.data.split(",");
@@ -65,8 +90,7 @@ angular.module('apb').controller('MainController', ['$scope','$log','$window','$
 			    $scope.$apply(function(){
 			    	 createMarker(mark);			    	 
 			    })                		   
-            }          
-               
+            }                        
 		}	    
 	    
 	    var createMarker = function (info){
@@ -74,24 +98,26 @@ angular.module('apb').controller('MainController', ['$scope','$log','$window','$
 
 	        if(checkWhetherUserExist(info.userId)){
 	        	checkWhetherUserExist(info.userId).setMap(null);
-	        	deletePreviousMarker(info.userId);	        	
+	        	deletePreviousMarker(info);	        	
 	        } 
 
         	var marker = new google.maps.Marker({
-            map: $scope.map,
-            position: new google.maps.LatLng(info.lat, info.long),
-            title: info.userId,
-            icon: icons[info.role].icon,
-            info: info
-	        });	        	        	        
+	            map: $scope.map,
+	            position: new google.maps.LatLng(info.lat, info.long),
+	            title: info.userId,
+	            icon: icons[info.role].icon,
+	            info: info
+		        });	        	        	        
 	        
 	        $scope.markers.push(marker);
 	        if(info.role === 'User'){
 	        	$scope.alertList.push(marker);
 	        	console.log('alerts List',$scope.alertList);
 	        }
-
-	        
+	        if(info.role === 'Responser'){
+	        	$scope.responserList.push(marker);
+	        	console.log('responserList',$scope.responserList);
+	        }
 
 	        google.maps.event.addListener(marker, 'click', function(){
 	        	if(marker.info.role === 'Responser'){
@@ -100,6 +126,7 @@ angular.module('apb').controller('MainController', ['$scope','$log','$window','$
 	        				marker.userDetails = response;	        				
 	        				marker.content = responserDetails(marker);	
 	        				checkAssignment(infoWindow,marker);
+	        				
         				})        				        				        		
         			}else{
         				marker.content = responserDetails(marker);
@@ -120,45 +147,45 @@ angular.module('apb').controller('MainController', ['$scope','$log','$window','$
 	        			checkResponserAssignment(marker,infoWindow);	        				
         			}     		
 	        	}	            
-	        });
-	        
-	        
-	        
+	        });	        	        
 	    } 
-
+	    	    
 	    function checkResponserAssignment(marker,infoWindow){
 	    	// The "assign to" button has been clicked:
 			if(assignTo.length > 0){
-				if(marker.info.responder){
+				if(marker.info.responser){
 					alert("Already assigned!");
 				}else{
 					assignTo.push(marker);
 					console.log('assignToEnd',assignTo);
-					marker.info.responder = assignTo[0];
-					// add assignTo to the responser
-					// var responser = $scope.markers.find(function(marker){
-					// 	return marker.info.userId == assignTo[0].info.userId;
-					// })
+					marker.info.responser = assignTo[0];
 					assignTo[0].info.assignTo = assignTo[1];
 					
 					sendAssignToServer(assignTo[0],assignTo[1]);
 					assignTo = [];
 					$scope.$apply(function(){
 						marker.info.status = 0;
-						$scope.alertListBGC = '#ffebaf';
-						$scope.alertFontColor = '#000000';	
-					})
-					
-					console.log('markers',$scope.markers);
-					
+						$scope.alertListBGC = '#ff9800';
+						$scope.alertFontColor = '#ffffff';	
+					})					
 				}				
 			} 
 			// The "assign to" button hasn't been clicked:	
-			if(assignTo.length === 0 && marker.info.responder){
+			if(assignTo.length === 0 && marker.info.responser){
 				console.log('NoAssignTo');
-				marker.content += '<div><hr><h4><img class="icon-responser" src="assets/images/Responser.png"></img>' + marker.info.responder.info.userId + '</h4></div>';
+				originLocation = marker.position;
+				marker.content += '<div><hr><h4><img class="icon-responser" src="assets/images/Responser.png"></img><a id="setRoute1">' + marker.info.responser.info.userId + '</a></h4></div>';
+				displayContent(infoWindow,marker);
+				var setRoute1 = document.getElementById('setRoute1');
+    			setRoute1.addEventListener('click',function(){
+    				destLocation = marker.info.responser.position;
+    				calculateAndDisplayRoute(directionsService, directionsDisplay);
+    				infoWindow.close();
+    			})
+			}else{
+				displayContent(infoWindow,marker);
 			}
-			displayContent(infoWindow,marker);
+			
 	    }
 
 	    function checkAssignment(infoWindow,marker){
@@ -170,13 +197,21 @@ angular.module('apb').controller('MainController', ['$scope','$log','$window','$
 		        	assignTo = [];
 		    		assignTo.push(marker);
 		    		console.log('assignTo',assignTo);
+		    		infoWindow.close();
 		        })
 
     		}
 
     		if(marker.info.assignTo){
-    			marker.content += '<div><hr><h4><img class="icon-user" src="assets/images/User.png"></img>' + marker.info.assignTo.info.userId + '</h4></div>';
+    			originLocation = marker.position;
+    			marker.content += '<div><hr><h4><img class="icon-user" src="assets/images/User.png"></img><a id="setRoute2">' + marker.info.assignTo.info.userId + '</a></h4></div>';
     			displayContent(infoWindow,marker);
+    			var setRoute2 = document.getElementById('setRoute2');
+    			setRoute2.addEventListener('click',function(){
+    				destLocation = marker.info.assignTo.position;
+    				calculateAndDisplayRoute(directionsService, directionsDisplay);
+    				infoWindow.close();
+    			})
     		}
 	    }
 
@@ -187,14 +222,29 @@ angular.module('apb').controller('MainController', ['$scope','$log','$window','$
 			return result;
 	    }
 
-	    var deletePreviousMarker = function(userId){
+	    var deletePreviousMarker = function(info){
+	    	console.log('deletemarker');
 	    	var index = $scope.markers.indexOf(function(marker){
-    			return marker.info.userId == userId;
+    			return marker.info.userId == info.userId;
 			});
 			$scope.markers.splice(index,1);
+
+			if(info.role == 'User'){
+				var index1 = $scope.alertList.indexOf(function(marker){
+    			return marker.info.userId == userId;
+				});
+				$scope.alertList.splice(index1,1);				
+			}
+			
+			if(info.role == 'Responser'){
+				var index2 = $scope.responserList.indexOf(function(marker){
+    			return marker.info.userId == userId;
+				});
+				$scope.responserList.splice(index2,1);				
+			}			
 	    } 	    
 
-	   var  getUserDetails = function(id,type){
+	    var  getUserDetails = function(id,type){
 	    	$log.info("get Details for ",type,id);
 	    	var by = type==='Responser'?"/id":"";
 	    	return $http.get(apiUrl + '/' + type.toLowerCase() + by + '/' + id)
@@ -248,6 +298,14 @@ angular.module('apb').controller('MainController', ['$scope','$log','$window','$
 	    	$log.debug('sendAssignToServer');
 	    	return $http.post( apiUrl + '/geolocation/tag/' + responser.info.userId + '?userId=' + user.info.userId + '&lat=' + user.info.lat + '&lng=' + user.info.long)
 
+	    }
+
+	    $scope.hasResponser = function(){
+	    	 if($scope.responserList.length > 0){
+	    	 	return true;
+	    	 }else{
+	    	 	return false;
+	    	 }
 	    }
 
 	    $scope.openInfoWindow = function(selectedMarker){

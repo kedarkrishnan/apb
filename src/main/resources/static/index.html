@@ -13,14 +13,30 @@
                 <div class="text-center map col-md-12" id="map" ng-style="{height: winHeight}">                
                 </div>
                 <div class="alertList">
-                <div class="list-group" data-ng-repeat="marker in alertList" >                    
-                    <div class="list-group-item clickable" ng-style="{'background-color':alertListBGC}" data-ng-click="openInfoWindow(marker)" >
-                        <span ng-class="{'blink':marker.info.status}" ng-style="{color: alertFontColor}" data-ng-bind="marker.info.userId"></span>      
-                    </div>
-                </div>
-                </div>            
+                    <div class="list-group" data-ng-repeat="marker in alertList" >                    
+                        <div class="list-group-item clickable" ng-class="{'blink':marker.info.status}"  ng-style="{'background-color':alertListBGC}" data-ng-click="openInfoWindow(marker)" >
+                            <h4 class="list-group-item-heading">
+                                <img class="icon-response list-icon" src="assets/images/User.png">
+                                <span ng-style="{color: alertFontColor}" data-ng-bind="marker.info.userId"></span>
+                            </h4>
+                            <p class="list-group-item-text" ng-style="{color: alertFontColor}" data-ng-if="marker.info.responser"><small>
+                                Assigned To: <span data-ng-bind="marker.info.responser.info.userId"></span></small>
+                            </p>      
+                        </div>                                       
+                    </div>            
+                    <div class="responserList list-group" data-ng-repeat="marker in responserList">
+                        <div class="list-group-item clickable" data-ng-click="openInfoWindow(marker)" >
+                            <h4 class="list-group-item-heading">
+                                <img class="icon-responser list-icon" src="assets/images/Responser.png">
+                                <span data-ng-bind="marker.info.userId"></span>
+                            </h4>
+                            <p class="list-group-item-text" data-ng-if="marker.info.assignTo"><small>
+                            Assigned To: <span data-ng-bind="marker.info.assignTo.info.userId"></span></small>
+                        </p>
+                        </div>
+                    </div>       
+                </div>               
             </div>
-        </div>
         <script src="https://code.angularjs.org/1.4.8/angular.min.js"></script>
         <script src="https://code.angularjs.org/1.4.8/angular-route.min.js"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/angular-strap/2.3.12/angular-strap.min.js"></script>

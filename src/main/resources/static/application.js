@@ -12,7 +12,7 @@ app.config(['$httpProvider','$logProvider','$routeProvider',
 		    templateUrl: 'index.html'
 		})
 		.when('/download',{
-			templateUrl:'download.html'
+			templateUrl: 'download.html'
 		})
 		.otherwise({
 		    redirectTo: '/'
