@@ -106,8 +106,7 @@ angular.module('apb').controller('MainController', ['$scope','$log','$window','$
 	            position: new google.maps.LatLng(info.lat, info.long),
 	            title: info.userId,
 	            icon: icons[info.role].icon,
-	            info: info,
-	            optimized: false
+	            info: info
 		        });	        	        	        
 	        
 	        $scope.markers.push(marker);
@@ -120,7 +119,7 @@ angular.module('apb').controller('MainController', ['$scope','$log','$window','$
 	        	console.log('responserList',$scope.responserList);
 	        }
 
-	        google.maps.event.addDomListener(marker, 'click', function(){
+	        google.maps.event.addListener(marker, 'click', function(){
 	        	if(marker.info.role === 'Responser'){
 	        		if(!marker.userDetails){
         				getUserDetails(marker.info.userId,marker.info.role).then(function(response){
